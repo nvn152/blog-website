@@ -7,10 +7,12 @@ import Loader from "../src/components/shared/Loader";
 import Error from "./components/shared/Error";
 import Dashboard from "./_root/pages/Dashboard";
 import Project from "./_root/pages/Project";
+import About from "./_root/pages/About";
 
 import AuthLayout from "../src/_auth/AuthLayout";
 import Signin from "../src/_auth/forms/Signin";
 import Signup from "../src/_auth/forms/Signup";
+import Contact from "./_root/pages/Contact";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +32,16 @@ const router = createBrowserRouter([
       {
         path: "/project",
         element: <Project />,
+        loader: Loader,
+      },
+      {
+        path: "/about",
+        element: <About />,
+        loader: Loader,
+      },
+      {
+        path: "/contact",
+        element: <Contact />,
         loader: Loader,
       },
     ],
