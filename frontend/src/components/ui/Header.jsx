@@ -3,13 +3,24 @@ import { Link, NavLink } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon } from "react-icons/fa";
 import { FaSun } from "react-icons/fa";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "../../redux/theme/themeSlice";
+
+// react icons
+import { HiViewGrid, HiCog, HiCurrencyDollar, HiLogout } from "react-icons/hi";
 
 function Header() {
-  const darkMode = true;
+  const {
+    currentUser,
+    isLoggedIn,
+    error: serverError,
+    loading,
+  } = useSelector((state) => state.user);
+  const { theme } = useSelector((state) => state.theme);
 
+  const dispatch = useDispatch();
   return (
-    <Navbar fluid rounded className="border-b-2  p-4">
+    <Navbar fluid rounded className="border-b-2 dark:bg-[#1E1E1E] p-4">
       <Link
         to="/"
         className="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
@@ -19,13 +30,25 @@ function Header() {
         </span>
         <span className="px-1">Blog</span>
       </Link>
-      <form className="hidden md:block lg:block">
+      {/* <form className="hidden md:block lg:block">
         <TextInput
           type="text"
           placeholder="Search blogs..."
           rightIcon={AiOutlineSearch}
+          className=""
         />
-      </form>
+      </form> */}
+
+      <div className="relative md:block lg:block lg:w-80 hidden ">
+        <input
+          type="text"
+          // value={searchQuery}
+          // onChange={handleChange}
+          placeholder="Search Blogs..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-3xl border-none shadow-sm outline-none focus:border-gray-400 dark:bg-[#3f3f3f]"
+        />
+        <AiOutlineSearch className="absolute top-0 right-0 mt-3 mr-4 text-gray-400" />
+      </div>
 
       <Button
         className="w-12
@@ -42,48 +65,49 @@ function Header() {
          h-10 hidden sm:inline"
           color="gray"
           pill
+          onClick={() => dispatch(toggleTheme())}
         >
-          {darkMode ? <FaMoon /> : <FaSun />}
+          {theme === "light" ? <FaMoon /> : <FaSun />}
         </Button>
 
-        <Link to="/auth.signin">
-          <Button className="" color="gray" pill>
-            Sign In
-          </Button>
-        </Link>
-      </div>
+        {currentUser ? (
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar
+                alt="User image"
+                img={currentUser.profilePicture}
+                rounded
+              />
+            }
+          >
+            <Dropdown.Header>
+              <span className="block text-sm">@{currentUser.username}</span>
+              <span className="block truncate text-sm font-semibold">
+                {currentUser.email}
+              </span>
+            </Dropdown.Header>
+            <Dropdown.Item icon={HiViewGrid}>
+              <Link to="/dashboard?tab=profile">Dashboard</Link>
+            </Dropdown.Item>
 
-      {/* <div className="flex md:order-2">
-        <Dropdown
-          arrowIcon={false}
-          inline
-          label={
-            <Avatar
-              alt="User settings"
-              img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-              rounded
-            />
-          }
-        >
-          <Dropdown.Header>
-            <span className="block text-sm">Bonnie Green</span>
-            <span className="block truncate text-sm font-medium">
-              name@flowbite.com
-            </span>
-          </Dropdown.Header>
-          <Dropdown.Item>Dashboard</Dropdown.Item>
-          <Dropdown.Item>Settings</Dropdown.Item>
-          <Dropdown.Item>Earnings</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item>Sign out</Dropdown.Item>
-        </Dropdown>
-       
-      </div> */}
+            <Dropdown.Divider />
+            <Dropdown.Item icon={HiLogout}>Sign out</Dropdown.Item>
+          </Dropdown>
+        ) : (
+          <Link to="/auth/sign-up">
+            <Button className="outline-1 " color="gray" pill>
+              Sign Up
+            </Button>
+          </Link>
+        )}
+      </div>
       <Navbar.Toggle />
       <Navbar.Collapse className="">
         <NavLink
           className={({ isActive }) =>
-            isActive ? "rounded-lg text-slate-500 font-semibold " : ""
+            isActive ? "rounded-lg text-slate-500 font-semibold  " : ""
           }
           to="/"
         >
@@ -91,7 +115,7 @@ function Header() {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
-            isActive ? "rounded-lg text-slate-500 font-semibold " : ""
+            isActive ? "rounded-lg text-slate-500 font-semibold  " : ""
           }
           to="/about"
         >
@@ -99,7 +123,7 @@ function Header() {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
-            isActive ? "rounded-lg text-slate-500 font-semibold " : ""
+            isActive ? "rounded-lg text-slate-500 font-semibold  " : ""
           }
           to="/project"
         >
@@ -107,7 +131,7 @@ function Header() {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
-            isActive ? "rounded-lg text-slate-500 font-semibold " : ""
+            isActive ? "rounded-lg text-slate-500 font-semibold  " : ""
           }
           to="/contact"
         >

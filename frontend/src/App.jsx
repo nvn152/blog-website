@@ -13,6 +13,8 @@ import AuthLayout from "../src/_auth/AuthLayout";
 import Signin from "../src/_auth/forms/Signin";
 import Signup from "../src/_auth/forms/Signup";
 import Contact from "./_root/pages/Contact";
+import SignIn from "../src/_auth/forms/Signin";
+import PrivateRoute from "./components/shared/PrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -24,10 +26,18 @@ const router = createBrowserRouter([
         element: <Home />,
         loader: Loader,
       },
+      // private route
       {
         path: "/dashboard",
-        element: <Dashboard />,
-        loader: Loader,
+        element: <PrivateRoute />,
+        errorElement: <Error />,
+        children: [
+          {
+            path: "",
+            element: <Dashboard />,
+            loader: Loader,
+          },
+        ],
       },
       {
         path: "/project",
@@ -56,7 +66,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "sign-in",
-        element: <Signin />,
+        element: <SignIn />,
         loader: Loader,
       },
       {
