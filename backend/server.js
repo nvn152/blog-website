@@ -4,6 +4,7 @@ import { connectDB } from "./config/dbConnection.js";
 import userRoutes from "./routes/userRoute.js";
 import authRoutes from "./routes/authRoute.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -14,6 +15,7 @@ const app = express();
 
 //middlewares
 app.use(express.json());
+app.use(cookieParser());
 
 //routes
 app.use("/api/users", userRoutes);

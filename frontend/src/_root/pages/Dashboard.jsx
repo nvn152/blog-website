@@ -17,12 +17,14 @@ function Dashboard() {
   }, [location.search]);
 
   return (
-    <div className="h-screen flex">
-      <div>
+    <div className="md:min-h-screen flex flex-col md:flex-row">
+      <div className="md:w-64 flex-shrink-0">
         <AdminSideBar />
       </div>
 
-      <div>{tab === "profile" && <AdminProfile />}</div>
+      <div className="h-full w-full">
+        {tab === "profile" && <AdminProfile />}
+      </div>
     </div>
   );
 }

@@ -56,15 +56,13 @@ const signin = asyncHandler(async (req, res, next) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     const accessToken = jwt.sign(
       {
-        user: {
-          username: user.username,
-          email: user.email,
-          id: user.id,
-        },
+        id: user._id,
       },
       process.env.JWT_SECRET,
       { expiresIn: "300m" }
     );
+
+    console.log(`Access token = ${accessToken}`);
 
     const { password: password, ...userWithoutPassword } = user._doc;
 
@@ -111,14 +109,14 @@ const googleAuth = asyncHandler(async (req, res, next) => {
       await newUser.save();
       const accessToken = jwt.sign(
         {
-          id: user._id,
+          id: newUser._id,
         },
         process.env.JWT_SECRET,
         { expiresIn: "300m" }
       );
 
       const { password: password, ...userWithoutPassword } = newUser._doc;
-      res.status(200).cookie({ token: accessToken, httpOnly: true }).json({
+      res.status(200).cookie("token", accessToken, { httpOnly: true }).json({
         success: true,
         user: userWithoutPassword,
       });

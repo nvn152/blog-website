@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Card,
   Typography,
@@ -6,6 +7,9 @@ import {
   ListItemPrefix,
   ListItemSuffix,
   Chip,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
 } from "@material-tailwind/react";
 import {
   PresentationChartBarIcon,
@@ -15,24 +19,130 @@ import {
   InboxIcon,
   PowerIcon,
 } from "@heroicons/react/24/solid";
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function AdminSideBar() {
+  const location = useLocation();
+  const [tab, setTab] = useState();
+  const [isActive, setIsActive] = useState(true);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tabFromUrl = urlParams.get("tab");
+    console.log(tabFromUrl);
+    if (tabFromUrl) {
+      setTab(tabFromUrl);
+    }
+  }, [location.search]);
+
+  console.log(tab);
+
+  const [open, setOpen] = React.useState(0);
+
+  const handleOpen = (value) => {
+    setOpen(open === value ? 0 : value);
+  };
+
   return (
-    <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 dark:bg-[#1E1E1E] dark:text-gray-300">
+    <Card className="md:h-[calc(100vh-2rem)] w-full md:max-w-[40rem] p-4 shadow-xl shadow-blue-gray-900/5 dark:bg-[#1E1E1E] dark:text-gray-300">
       <div className="mb-2 p-4">
         <Typography variant="h5" color="blue-gray">
           Sidebar
         </Typography>
       </div>
       <List>
-        <ListItem className="my-2 text-lg font-semibold">
-          <ListItemPrefix>
-            <PresentationChartBarIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Dashboard
-        </ListItem>
-
-        <ListItem className="my-2 text-lg font-semibold">
+        <Accordion
+          open={open === 1}
+          icon={
+            <ChevronDownIcon
+              strokeWidth={2.5}
+              className={`mx-auto h-4 w-4 transition-transform ${
+                open === 1 ? "rotate-180" : ""
+              }`}
+            />
+          }
+        >
+          <ListItem className="p-0" selected={open === 1}>
+            <AccordionHeader
+              onClick={() => handleOpen(1)}
+              className="border-b-0 p-3"
+            >
+              <ListItemPrefix>
+                <PresentationChartBarIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              <Typography color="blue-gray" className="mr-auto font-normal">
+                Dashboard
+              </Typography>
+            </AccordionHeader>
+          </ListItem>
+          <AccordionBody className="py-1 dark:text-gray-300">
+            <List className="p-0">
+              <ListItem>
+                <ListItemPrefix>
+                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                Analytics
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                Reporting
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                Projects
+              </ListItem>
+            </List>
+          </AccordionBody>
+        </Accordion>
+        <Accordion
+          open={open === 2}
+          icon={
+            <ChevronDownIcon
+              strokeWidth={2.5}
+              className={`mx-auto h-4 w-4 transition-transform ${
+                open === 2 ? "rotate-180" : ""
+              }`}
+            />
+          }
+        >
+          <ListItem className="p-0" selected={open === 2}>
+            <AccordionHeader
+              onClick={() => handleOpen(2)}
+              className="border-b-0 p-3 "
+            >
+              <ListItemPrefix>
+                <ShoppingBagIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              <Typography color="blue-gray" className="mr-auto font-normal">
+                E-Commerce
+              </Typography>
+            </AccordionHeader>
+          </ListItem>
+          <AccordionBody className="py-1 dark:text-gray-300">
+            <List className="p-0">
+              <ListItem>
+                <ListItemPrefix>
+                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                Orders
+              </ListItem>
+              <ListItem>
+                <ListItemPrefix>
+                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                </ListItemPrefix>
+                Products
+              </ListItem>
+            </List>
+          </AccordionBody>
+        </Accordion>
+        <ListItem>
           <ListItemPrefix>
             <InboxIcon className="h-5 w-5" />
           </ListItemPrefix>
@@ -47,19 +157,48 @@ function AdminSideBar() {
             />
           </ListItemSuffix>
         </ListItem>
-        <ListItem className="my-2 text-lg font-semibold">
-          <ListItemPrefix>
-            <UserCircleIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Profile
-        </ListItem>
-        <ListItem className="my-2 text-lg font-semibold">
-          <ListItemPrefix>
-            <Cog6ToothIcon className="h-5 w-5" />
-          </ListItemPrefix>
-          Settings
-        </ListItem>
-        <ListItem className="my-2 text-lg font-semibold">
+        <Link to="/dashboard?tab=profile">
+          <ListItem
+            className={` ${
+              isActive && tab === "profile"
+                ? "bg-gray-100 dark:bg-black/40"
+                : ""
+            }`}
+            selected={tab === "profile"}
+            onClick={() => {
+              setTab("profile");
+              setIsActive(true);
+            }}
+          >
+            <ListItemPrefix>
+              <UserCircleIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Profile
+            <ListItemSuffix>
+              <Chip value="User" vairant="outline" color="cyan" />
+            </ListItemSuffix>
+          </ListItem>
+        </Link>
+        <Link to="/dashboard?tab=settings">
+          <ListItem
+            className={` ${
+              isActive && tab === "settings"
+                ? "bg-gray-100 dark:bg-black/40"
+                : ""
+            }`}
+            selected={tab === "settings"}
+            onClick={() => {
+              setTab("settings");
+              setIsActive(true);
+            }}
+          >
+            <ListItemPrefix>
+              <Cog6ToothIcon className="h-5 w-5" />
+            </ListItemPrefix>
+            Settings
+          </ListItem>
+        </Link>
+        <ListItem>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
           </ListItemPrefix>
