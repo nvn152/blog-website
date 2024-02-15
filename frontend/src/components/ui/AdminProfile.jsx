@@ -24,6 +24,7 @@ import {
   deleteStart,
   deleteSuccess,
   deleteFailure,
+  signOutSuccess,
 } from "../../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
@@ -156,6 +157,27 @@ function AdminProfile() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/users/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success === true) {
+        dispatch(signOutSuccess());
+      } else {
+        toast.error("Could not sign out");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="flex gap-5 flex-col p-10 3000">
       <h1 className="self-center text-5xl font-semibold">Profile</h1>
@@ -261,7 +283,10 @@ function AdminProfile() {
         >
           Delete Account
         </span>
-        <span className="text-red-500 font-medium text-lg bg-slate-800/30 p-2 rounded-lg">
+        <span
+          className="text-red-500 font-medium text-lg bg-slate-800/30 p-2 rounded-lg cursor-pointer"
+          onClick={handleSignOut}
+        >
           Sign Out
         </span>
       </div>

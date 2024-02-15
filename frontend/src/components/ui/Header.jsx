@@ -8,6 +8,7 @@ import { toggleTheme } from "../../redux/theme/themeSlice";
 
 // react icons
 import { HiViewGrid, HiCog, HiCurrencyDollar, HiLogout } from "react-icons/hi";
+import { signOutSuccess } from "../../redux/user/userSlice";
 
 function Header() {
   const {
@@ -19,6 +20,27 @@ function Header() {
   const { theme } = useSelector((state) => state.theme);
 
   const dispatch = useDispatch();
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/users/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success === true) {
+        dispatch(signOutSuccess());
+      } else {
+        toast.error("Could not sign out");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Navbar fluid rounded className="border-b-2 dark:bg-[#1E1E1E] p-4">
       <Link
@@ -93,7 +115,9 @@ function Header() {
             </Dropdown.Item>
 
             <Dropdown.Divider />
-            <Dropdown.Item icon={HiLogout}>Sign out</Dropdown.Item>
+            <Dropdown.Item icon={HiLogout} onClick={handleSignOut}>
+              Sign out
+            </Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to="/auth/sign-up">

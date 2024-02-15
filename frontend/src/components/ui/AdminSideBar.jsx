@@ -23,6 +23,8 @@ import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { signOutSuccess } from "../../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 
 function AdminSideBar() {
   const location = useLocation();
@@ -44,6 +46,29 @@ function AdminSideBar() {
 
   const handleOpen = (value) => {
     setOpen(open === value ? 0 : value);
+  };
+
+  const dispatch = useDispatch();
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/users/signout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success === true) {
+        dispatch(signOutSuccess());
+      } else {
+        toast.error("Could not sign out");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -198,11 +223,11 @@ function AdminSideBar() {
             Settings
           </ListItem>
         </Link>
-        <ListItem>
+        <ListItem onClick={handleSignOut}>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
           </ListItemPrefix>
-          Log Out
+          Sign Out
         </ListItem>
       </List>
     </Card>
