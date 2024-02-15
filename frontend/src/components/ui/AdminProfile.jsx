@@ -2,8 +2,11 @@ import { Button, Input } from "@material-tailwind/react";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
+import { Button as FlowbiteButton, Modal } from "flowbite-react";
+
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 import {
   getDownloadURL,
@@ -18,6 +21,9 @@ import {
   updateStart,
   updateSuccess,
   updateFailure,
+  deleteStart,
+  deleteSuccess,
+  deleteFailure,
 } from "../../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
@@ -38,7 +44,7 @@ function AdminProfile() {
   const [uploadError, setUploadError] = useState(null);
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const filePickerRef = useRef();
 
@@ -125,6 +131,29 @@ function AdminProfile() {
         setFormData({});
       }
     } catch (error) {}
+  };
+
+  const handleDelete = async () => {
+    try {
+      dispatch(deleteStart());
+      const res = await fetch(`/api/users/delete/${currentUser._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status !== 200) {
+        toast.error("Could not delete account");
+        return dispatch(deleteFailure("Could not delete account"));
+      } else {
+        const data = await res.json();
+        toast.success("Account deleted successfully");
+        dispatch(deleteSuccess(data.user));
+      }
+    } catch (error) {
+      dispatch(deleteFailure(error.message));
+    }
   };
 
   return (
@@ -225,9 +254,9 @@ function AdminProfile() {
 
       <div className="flex justify-between">
         <span
-          className="text-red-500 font-medium text-lg bg-slate-800/30 p-2 rounded-lg"
+          className="text-red-500 font-medium text-lg bg-slate-800/30 p-2 cursor-pointer rounded-lg"
           onClick={() => {
-            showModal(true);
+            setOpenModal(true);
           }}
         >
           Delete Account
@@ -237,6 +266,36 @@ function AdminProfile() {
         </span>
       </div>
       <Toaster position="top-center" reverseOrder={false} />
+      <Modal
+        show={openModal}
+        size="md"
+        onClose={() => setOpenModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center bg-white dark:bg-gray-800 p-5 rounded-lg">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete your account?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <FlowbiteButton
+                color="failure"
+                onClick={() => {
+                  setOpenModal(false);
+                  handleDelete();
+                }}
+              >
+                {"Yes, I'm sure"}
+              </FlowbiteButton>
+              <FlowbiteButton color="gray" onClick={() => setOpenModal(false)}>
+                No, cancel
+              </FlowbiteButton>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
