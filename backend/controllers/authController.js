@@ -28,9 +28,17 @@ const signup = asyncHandler(async (req, res, next) => {
     password: hashedPassword,
   });
 
+  const accessToken = jwt.sign(
+    {
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "300m" }
+  );
+
   try {
     await user.save();
-    res.status(201).json({
+    res.cookie("token", accessToken, { httpOnly: true }).status(201).json({
       success: true,
       message: "User registered successfully",
       user,
@@ -57,6 +65,7 @@ const signin = asyncHandler(async (req, res, next) => {
     const accessToken = jwt.sign(
       {
         id: user._id,
+        isAdmin: user.isAdmin,
       },
       process.env.JWT_SECRET,
       { expiresIn: "300m" }
@@ -86,6 +95,7 @@ const googleAuth = asyncHandler(async (req, res, next) => {
       const accessToken = jwt.sign(
         {
           id: user._id,
+          isAdmin: user.isAdmin,
         },
         process.env.JWT_SECRET,
         { expiresIn: "300m" }
@@ -110,6 +120,7 @@ const googleAuth = asyncHandler(async (req, res, next) => {
       const accessToken = jwt.sign(
         {
           id: newUser._id,
+          isAdmin: newUser.isAdmin,
         },
         process.env.JWT_SECRET,
         { expiresIn: "300m" }
