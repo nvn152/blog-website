@@ -4,7 +4,7 @@ import Footer from "../components/ui/Footer";
 
 function Rootlayout() {
   return (
-    <div>
+    <div className="">
       <Header />
       <Outlet />
       <Footer />

@@ -28,6 +28,7 @@ import {
 } from "../../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 function AdminProfile() {
   const dispatch = useDispatch();
@@ -271,6 +272,18 @@ function AdminProfile() {
           >
             Update
           </Button>
+          {currentUser.isAdmin && (
+            <Link to="/create-post">
+              <Button
+                variant="outlined"
+                type="button"
+                className="md:w-[600px]  w-[300px] text-gray-800 dark:text-gray-100 bg-white/30"
+                onClick={() => {}}
+              >
+                Create Post
+              </Button>
+            </Link>
+          )}
         </div>
       </form>
 

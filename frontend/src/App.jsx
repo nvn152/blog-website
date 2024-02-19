@@ -15,6 +15,8 @@ import Signup from "../src/_auth/forms/Signup";
 import Contact from "./_root/pages/Contact";
 import SignIn from "../src/_auth/forms/Signin";
 import PrivateRoute from "./components/shared/PrivateRoute";
+import CreatePost from "./_root/pages/CreatePost";
+import AdminOnlyRoute from "./components/shared/AdminOnlyRoute";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,19 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <Dashboard />,
+            loader: Loader,
+          },
+        ],
+      },
+      // Admin only private route
+      {
+        path: "/create-post",
+        element: <AdminOnlyRoute />,
+        errorElement: <Error />,
+        children: [
+          {
+            path: "",
+            element: <CreatePost />,
             loader: Loader,
           },
         ],
