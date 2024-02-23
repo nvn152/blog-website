@@ -3,7 +3,7 @@ import { error } from "../utils/error.js";
 import Post from "../models/PostModel.js";
 
 const createPost = expressAsyncHandler(async (req, res, next) => {
-  if (!req.body.isAdmin) {
+  if (!req.user.isAdmin) {
     return next(error(400, "You are not allowed to create a post", res));
   }
 

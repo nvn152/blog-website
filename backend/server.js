@@ -10,6 +10,8 @@ import postRoutes from "./routes/postRoute.js";
 dotenv.config();
 const port = process.env.PORT || 5000;
 
+console.log(process.env.MONGO_URI);
+
 connectDB();
 
 const app = express();

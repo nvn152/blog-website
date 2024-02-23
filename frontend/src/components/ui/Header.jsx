@@ -99,7 +99,7 @@ function Header() {
             label={
               <Avatar
                 alt="User image"
-                img={currentUser.profilePicture}
+                img={currentUser.profilePicture || "/images/user.webp"}
                 rounded
               />
             }

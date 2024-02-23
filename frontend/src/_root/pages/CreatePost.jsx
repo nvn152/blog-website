@@ -3,15 +3,73 @@ import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import Quill styles
 
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "../../firebase";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import toast from "react-hot-toast";
+
 function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [category, setCategory] = useState("");
+  const [imageUploadProgress, setImageUploadProgress] = useState(null);
+  const [imageUploadError, setImageUploadError] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [formData, setFormData] = useState({});
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    try {
+      if (!file) {
+        setImageUploadError("Please select an image");
+        return;
+      }
+      setImageUploadError(null);
+      const storage = getStorage(app);
+      const fileName = new Date().getTime().toString() + file.name;
+      const storageRef = ref(storage, `images/${fileName}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setImageUploadProgress(progress.toFixed(0));
+          console.log(`Upload is ${progress}% done`);
+        },
+        (error) => {
+          console.log(error);
+          setImageUploadError(error.message);
+          setImageUploadProgress(null);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            setImageUploadError(null), setImageUploadProgress(null);
+            setImagePreview(url);
+            setFormData({ ...formData, profilePicture: url });
+            console.log(url);
+          });
+        }
+      );
+    } catch (error) {
+      setImageUploadError(error.message);
+      setImageUploadProgress(null);
+      console.log(error);
+    }
   };
 
   const handleSubmit = (event) => {
@@ -76,20 +134,48 @@ function CreatePost() {
               </option>
             </select>
           </div>
+
           <div className="mb-4 max-w-full ">
             <label
               htmlFor="file"
               className="block text-gray-700 font-bold mb-2 dark:text-gray-100"
             >
-              Select File/Image
+              {imageUploadError
+                ? imageUploadError
+                : imageUploadProgress
+                ? `Uploading ${imageUploadProgress}%`
+                : "Upload Image"}
+
+              {imageUploadError &&
+                toast.error(imageUploadError, {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                })}
             </label>
-            <input
-              type="file"
-              id="file"
-              className="border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 "
-              onChange={handleFileChange}
-              accept="image/*"
-            />
+            <div className="md:flex flex-col md:max-w-30">
+              <input
+                type="file"
+                id="file"
+                className="border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 "
+                onChange={handleImageChange}
+                accept="image/*"
+              />
+
+              {formData.profilePicture && (
+                <div className="mb-4 max-w-[600px] ">
+                  <img
+                    src={formData.profilePicture}
+                    alt="preview"
+                    className="rounded-md w-full h-full"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <button
