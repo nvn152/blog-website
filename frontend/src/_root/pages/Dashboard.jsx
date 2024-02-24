@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import AdminSideBar from "../../components/ui/AdminSideBar";
 import AdminProfile from "../../components/ui/AdminProfile";
+import AllPosts from "../../components/AllPosts";
 
 function Dashboard() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function Dashboard() {
 
       <div className="h-full w-full">
         {tab === "profile" && <AdminProfile />}
+        {tab === "posts" && <AllPosts />}
       </div>
     </div>
   );

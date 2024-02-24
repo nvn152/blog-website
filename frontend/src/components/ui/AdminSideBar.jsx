@@ -24,12 +24,14 @@ import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { signOutSuccess } from "../../redux/user/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { HiDocumentText } from "react-icons/hi";
 
 function AdminSideBar() {
   const location = useLocation();
   const [tab, setTab] = useState();
   const [isActive, setIsActive] = useState(true);
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -39,8 +41,6 @@ function AdminSideBar() {
       setTab(tabFromUrl);
     }
   }, [location.search]);
-
-  console.log(tab);
 
   const [open, setOpen] = React.useState(0);
 
@@ -200,29 +200,35 @@ function AdminSideBar() {
             </ListItemPrefix>
             Profile
             <ListItemSuffix>
-              <Chip value="User" vairant="outline" color="cyan" />
+              <Chip
+                value={currentUser.isAdmin ? "Admin" : "User"}
+                vairant="outline"
+                color="cyan"
+              />
             </ListItemSuffix>
           </ListItem>
         </Link>
-        <Link to="/dashboard?tab=settings">
-          <ListItem
-            className={` ${
-              isActive && tab === "settings"
-                ? "bg-gray-100 dark:bg-black/40"
-                : ""
-            }`}
-            selected={tab === "settings"}
-            onClick={() => {
-              setTab("settings");
-              setIsActive(true);
-            }}
-          >
-            <ListItemPrefix>
-              <Cog6ToothIcon className="h-5 w-5" />
-            </ListItemPrefix>
-            Settings
-          </ListItem>
-        </Link>
+        {currentUser.isAdmin && (
+          <Link to="/dashboard?tab=posts">
+            <ListItem
+              className={` ${
+                isActive && tab === "posts"
+                  ? "bg-gray-100 dark:bg-black/40"
+                  : ""
+              }`}
+              selected={tab === "posts"}
+              onClick={() => {
+                setTab("posts");
+                setIsActive(true);
+              }}
+            >
+              <ListItemPrefix>
+                <HiDocumentText className="h-5 w-5" />
+              </ListItemPrefix>
+              All Posts
+            </ListItem>
+          </Link>
+        )}
         <ListItem onClick={handleSignOut}>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />
