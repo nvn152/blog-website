@@ -101,7 +101,7 @@ const googleAuth = asyncHandler(async (req, res, next) => {
         { expiresIn: "300m" }
       );
       const { password: password, ...userWithoutPassword } = user._doc;
-      res.status(200).cookie({ token: accessToken, httpOnly: true }).json({
+      res.status(200).cookie("token", accessToken, { httpOnly: true }).json({
         success: true,
         user: userWithoutPassword,
       });

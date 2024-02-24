@@ -13,17 +13,16 @@ import {
 import { app } from "../../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import toast from "react-hot-toast";
+import toast, { ToastBar, Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function CreatePost() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [category, setCategory] = useState("");
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({});
+
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -60,7 +59,7 @@ function CreatePost() {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
             setImageUploadError(null), setImageUploadProgress(null);
             setImagePreview(url);
-            setFormData({ ...formData, profilePicture: url });
+            setFormData({ ...formData, image: url });
             console.log(url);
           });
         }
@@ -72,10 +71,28 @@ function CreatePost() {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Logic to handle form submission (e.g., send data to server)
-    console.log({ title, content, selectedFile, category });
+    try {
+      const res = await fetch("/api/posts/createPost", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.success === true) {
+        toast.success("Post created successfully");
+        setFormData({});
+        setImagePreview(null);
+        navigate(`/post/${data.newPost.slug}`);
+      } else {
+        toast.error("Could not create post");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -93,19 +110,20 @@ function CreatePost() {
             type="text"
             id="title"
             className="w-full border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 dark:bg-[#3f3f3f] dark:text-gray-300"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
             required
             placeholder="Enter title"
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            value={formData.title}
           />
         </div>
         <div className="mb-4 max-w-full">
           <ReactQuill
             className="h-[300px] placeholder:text-[#888] "
             theme="snow"
-            value={content}
-            onChange={setContent}
             placeholder="Write your content here..."
+            onChange={(value) => setFormData({ ...formData, content: value })}
           />
         </div>
 
@@ -120,9 +138,10 @@ function CreatePost() {
             <select
               id="category"
               className="w-full border rounded-md py-2 px-3 focus:outline-none focus:border-blue-500 dark:bg-[#3f3f3f] dark:text-gray-300"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
               required
+              onChange={(e) =>
+                setFormData({ ...formData, category: e.target.value })
+              }
             >
               <option value="">Select Category</option>
               <option value="Technology">Technology</option>
@@ -186,6 +205,7 @@ function CreatePost() {
           </button>
         </div>
       </form>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 }

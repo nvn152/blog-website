@@ -17,20 +17,21 @@ const createPost = expressAsyncHandler(async (req, res, next) => {
     .toLowerCase()
     .replace(/[^a-zA-Z0-9-]/g, "");
 
-  const post = new Post({
+  const newPost = new Post({
     ...req.body,
     slug,
-    user: req.user._id,
+    userId: req.user.id,
   });
 
   try {
-    const savedPost = await post.save();
+    const savedPost = await newPost.save();
     res.status(201).json({
       success: true,
       message: "Post created successfully",
-      post: savedPost,
+      newPost: savedPost,
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 });
