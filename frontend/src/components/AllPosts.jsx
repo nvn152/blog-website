@@ -1,4 +1,4 @@
-import { Card, Typography } from "@material-tailwind/react";
+import { Card, Typography, button } from "@material-tailwind/react";
 import { Table } from "flowbite-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -8,8 +8,7 @@ import { Link } from "react-router-dom";
 function AllPosts() {
   const currentUser = useSelector((state) => state.user.currentUser);
   const [userPosts, setUserPosts] = useState([]);
-
-  console.log(userPosts);
+  const [showMore, setShowMore] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -20,6 +19,9 @@ function AllPosts() {
         const data = await res.json();
         if (data.success) {
           setUserPosts(data.posts);
+          if (data.posts.length < 10) {
+            setShowMore(false);
+          }
         } else {
           console.log("Could not fetch posts");
           toast.error("Could not fetch posts");
@@ -43,10 +45,29 @@ function AllPosts() {
     "EDIT",
   ];
 
-  console.log(userPosts);
+  const handleShowMore = async () => {
+    const startIndex = userPosts.length;
+    try {
+      const res = await fetch(
+        `/api/posts/getposts?userId=${currentUser._id}&startIndex=${startIndex}`
+      );
+      const data = await res.json();
+      if (data.success) {
+        setUserPosts((prevState) => [...prevState, ...data.posts]);
+        if (data.posts.length < 10) {
+          setShowMore(false);
+        }
+      } else {
+        console.log("Could not fetch posts");
+        toast.error("Could not fetch posts");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <div className="h-full w-full  my-2 table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-thumb-blue-500 scrollbar-track-blue-200 no-scrollbar overflow-hidden">
+    <div className="h-full w-full  my-2 table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-thumb-blue-500 scrollbar-track-blue-200 no-scrollbar overflow-auto">
       {currentUser.isAdmin && userPosts.length > 0 ? (
         <Card className="h-full w-full overflow-scroll my-2">
           <table className="w-full min-w-max table-auto text-left bg-gray-100 dark:bg-black/90 text-gray-900 dark:text-gray-100">
@@ -109,11 +130,11 @@ function AllPosts() {
                         </Link>
                       </Typography>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 w-[600px]">
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-medium text-lg"
+                        className="font-medium text-lg w-[600px]  overflow-hidden line-clamp-2"
                       >
                         <Link to={`/posts/${slug}`}>{title}</Link>
                       </Typography>
@@ -156,6 +177,14 @@ function AllPosts() {
               )}
             </tbody>
           </table>
+          {showMore && (
+            <button
+              className="w-full text-gray-700 dark:bg-black/90 dark:text-blue-400"
+              onClick={handleShowMore}
+            >
+              Show more
+            </button>
+          )}
         </Card>
       ) : (
         <div className="flex justify-center items-center h-screen">
