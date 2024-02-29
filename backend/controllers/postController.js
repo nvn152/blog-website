@@ -86,4 +86,20 @@ const getPosts = expressAsyncHandler(async (req, res, next) => {
   }
 });
 
-export { getPosts, createPost };
+const deletePost = expressAsyncHandler(async (req, res, next) => {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+    return next(error(400, "You are not allowed to delete a post", res));
+  }
+
+  try {
+    await Post.findByIdAndDelete(req.params.postId);
+    res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+export { getPosts, createPost, deletePost };

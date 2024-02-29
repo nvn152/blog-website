@@ -5,10 +5,15 @@ import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+import { Button as FlowbiteButton, Modal } from "flowbite-react";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
+
 function AllPosts() {
   const currentUser = useSelector((state) => state.user.currentUser);
   const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [postToDeleteId, setPostToDeleteId] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -66,9 +71,33 @@ function AllPosts() {
     }
   };
 
+  const handleDeletePost = async () => {
+    setShowModal(false);
+    try {
+      const res = await fetch(
+        `/api/posts/deletepost/${postToDeleteId}/${currentUser._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        setUserPosts((prev) =>
+          prev.filter((post) => post._id !== postToDeleteId)
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  console.log(userPosts);
+
   return (
     <div className="h-full w-full  my-2 table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-thumb-blue-500 scrollbar-track-blue-200 no-scrollbar overflow-auto">
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+      {currentUser.isAdmin && userPosts?.length > 0 ? (
         <Card className="h-full w-full overflow-scroll my-2">
           <table className="w-full min-w-max table-auto text-left bg-gray-100 dark:bg-black/90 text-gray-900 dark:text-gray-100">
             <thead>
@@ -156,9 +185,16 @@ function AllPosts() {
                         href="#"
                         variant="small"
                         color="blue-gray"
-                        className="font-medium"
+                        className="font-medium text-red-500"
                       >
-                        <span>Delete</span>
+                        <span
+                          onClick={() => {
+                            setShowModal(true);
+                            setPostToDeleteId(_id);
+                          }}
+                        >
+                          Delete
+                        </span>
                       </Typography>
                     </td>
                     <td className="p-4">
@@ -167,9 +203,9 @@ function AllPosts() {
                         href="#"
                         variant="small"
                         color="blue-gray"
-                        className="font-medium"
+                        className="font-medium text-blue-500"
                       >
-                        <Link to={`/posts/edit/${_id}`}>Edit</Link>
+                        <Link to={`/update-post/${_id}`}>Edit</Link>
                       </Typography>
                     </td>
                   </tr>
@@ -191,6 +227,36 @@ function AllPosts() {
           <p className="text-xl font-bold">No Posts</p>
         </div>
       )}
+      <Modal
+        show={showModal}
+        size="md"
+        onClose={() => setShowModal(false)}
+        popup
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center bg-white dark:bg-gray-800 p-5 rounded-lg">
+            <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete this post?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <FlowbiteButton
+                color="failure"
+                onClick={() => {
+                  setShowModal(false);
+                  handleDeletePost();
+                }}
+              >
+                {"Yes, I'm sure"}
+              </FlowbiteButton>
+              <FlowbiteButton color="gray" onClick={() => setShowModal(false)}>
+                No, cancel
+              </FlowbiteButton>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

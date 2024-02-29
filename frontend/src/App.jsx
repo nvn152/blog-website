@@ -17,6 +17,7 @@ import SignIn from "../src/_auth/forms/Signin";
 import PrivateRoute from "./components/shared/PrivateRoute";
 import CreatePost from "./_root/pages/CreatePost";
 import AdminOnlyRoute from "./components/shared/AdminOnlyRoute";
+import UpdatePost from "./_root/pages/UpdatePost";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,20 @@ const router = createBrowserRouter([
           },
         ],
       },
+
+      {
+        path: "/update-post/:postId",
+        element: <AdminOnlyRoute />,
+        errorElement: <Error />,
+        children: [
+          {
+            path: "",
+            element: <UpdatePost />,
+            loader: Loader,
+          },
+        ],
+      },
+
       {
         path: "/project",
         element: <Project />,
