@@ -18,6 +18,7 @@ import PrivateRoute from "./components/shared/PrivateRoute";
 import CreatePost from "./_root/pages/CreatePost";
 import AdminOnlyRoute from "./components/shared/AdminOnlyRoute";
 import UpdatePost from "./_root/pages/UpdatePost";
+import PostDetails from "./_root/pages/PostDetails";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +83,11 @@ const router = createBrowserRouter([
       {
         path: "/contact",
         element: <Contact />,
+        loader: Loader,
+      },
+      {
+        path: "/post/:slug",
+        element: <PostDetails />,
         loader: Loader,
       },
     ],

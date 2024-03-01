@@ -90,4 +90,47 @@ const signout = (req, res, next) => {
   }
 };
 
-export { test, update, deleteUser, signout };
+const getUsers = async (req, res, next) => {
+  if (!req.user.isAdmin) {
+    return next(error(401, "Unauthorized!", res));
+  }
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortDirection = req.query.order === "asc" ? 1 : -1;
+
+    const users = await User.find({})
+    .skip(startIndex)
+    .limit(limit)
+    .sort({ createdAt: sortDirection });
+
+    const usersWithoutPassword = users.map((user) => {
+      const { password,...userWithoutPassword } = user._doc;
+      return userWithoutPassword;
+    });
+
+    const totalUsers = await User.countDocuments({});
+
+    const now = new Date();
+    const oneMonthAge = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+      );
+
+      const usersInLastMonth = await User.countDocuments({
+        createdAt: { $gte: oneMonthAge },
+      });
+      res.status(200).json({
+        success: true,
+        users: usersWithoutPassword,
+        totalUsers,
+        usersInLastMonth,
+      });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { test, update, deleteUser, signout, getUsers };
