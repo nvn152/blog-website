@@ -37,23 +37,28 @@ const createPost = expressAsyncHandler(async (req, res, next) => {
 });
 
 const getPosts = expressAsyncHandler(async (req, res, next) => {
+  
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 10;
     const sortDirection = req.query.order === "asc" ? 1 : -1;
+
+    
 
     // Building the query conditions dynamically
     const queryConditions = {};
     if (req.query.userId) queryConditions.userId = req.query.userId;
     if (req.query.category) queryConditions.category = req.query.category;
     if (req.query.slug) queryConditions.slug = req.query.slug;
-    if (req.query.postId) queryConditions._id = req.query.postId;
+    if (req.query.postId) queryConditions._id = req.query.postId; 
     if (req.query.searchTerm) {
       queryConditions.$or = [
         { title: { $regex: req.query.searchTerm, $options: "i" } },
         { content: { $regex: req.query.searchTerm, $options: "i" } },
       ];
     }
+
+    console.log(queryConditions);
 
     const posts = await Post.find(queryConditions)
       .sort({ updatedAt: sortDirection })
@@ -102,4 +107,33 @@ const deletePost = expressAsyncHandler(async (req, res, next) => {
   }
 });
 
-export { getPosts, createPost, deletePost };
+const updatePost = expressAsyncHandler(async (req, res, next) => {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+    return next(error(400, "You are not allowed to update a post", res));
+  }
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.postId,
+      {
+        $set: {
+          title: req.body.title,
+          content: req.body.content,
+          category: req.body.category,
+          image: req.body.image,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      updatedPost,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  
+})
+
+export { getPosts, createPost, deletePost, updatePost };
