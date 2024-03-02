@@ -25,7 +25,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { signOutSuccess } from "../../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { HiDocumentText } from "react-icons/hi";
+import { HiDocumentText, HiOutlineUserGroup } from "react-icons/hi";
 
 function AdminSideBar() {
   const location = useLocation();
@@ -228,6 +228,32 @@ function AdminSideBar() {
               All Posts
             </ListItem>
           </Link>
+
+
+        )}
+
+{currentUser.isAdmin && (
+          <Link to="/dashboard?tab=users">
+            <ListItem
+              className={` ${
+                isActive && tab === "users"
+                  ? "bg-gray-100 dark:bg-black/40"
+                  : ""
+              }`}
+              selected={tab === "users"}
+              onClick={() => {
+                setTab("users");
+                setIsActive(true);
+              }}
+            >
+              <ListItemPrefix>
+                <HiOutlineUserGroup className="h-5 w-5" />
+              </ListItemPrefix>
+            All Users
+            </ListItem>
+          </Link>
+
+          
         )}
         <ListItem onClick={handleSignOut}>
           <ListItemPrefix>
