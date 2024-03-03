@@ -74,7 +74,27 @@ function AllUsers() {
     }
   };
 
-  const handleDelete = async (id) => {}
+  const handleDeleteUser = async () => {
+    try {
+      const res = await fetch(
+        `/api/users/delete/${userIdToDelete}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await res.json();
+      if (data.success) {
+        setUsers(users.filter((user) => user._id!== userIdToDelete));
+        showModal(false);
+        toast.success("User deleted successfully");
+      } else {
+        toast.error("Could not delete user");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
 
   return (

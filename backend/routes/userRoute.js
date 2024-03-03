@@ -16,4 +16,5 @@ router.delete("/delete/:id", authVerification, deleteUser);
 router.post("/signout", signout);
 router.get("/getusers", authVerification, getUsers)
 
+
 export default router;
