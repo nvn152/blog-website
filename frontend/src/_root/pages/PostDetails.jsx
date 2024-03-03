@@ -1,6 +1,7 @@
 import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import CallToAction from "../../components/shared/CallToAction";
 
 const PostDetails = () => {
   const [loading, setLoading] = useState(true);
@@ -76,6 +77,9 @@ const PostDetails = () => {
         dangerouslySetInnerHTML={{ __html: post?.content }}
         className="mt-10 p-3 max-w-2xl mx-auto w-full content"
       ></div>
+      <div className="max-w-4xl mx-auto w-full flex justify-between items-center mt-10">
+        <CallToAction />
+      </div>
     </main>
   );
 };
