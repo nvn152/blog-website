@@ -149,7 +149,7 @@ function AllPosts() {
                         color="blue-gray"
                         className="font-normal truncate w-52"
                       >
-                        <Link to={`/posts/${slug}`}>
+                        <Link to={`/post/${slug}`}>
                           <img
                             src={image}
                             alt="post image"
@@ -164,7 +164,7 @@ function AllPosts() {
                         color="blue-gray"
                         className="font-medium text-lg w-[600px]  overflow-hidden line-clamp-2"
                       >
-                        <Link to={`/posts/${slug}`}>{title}</Link>
+                        <Link to={`/post/${slug}`}>{title}</Link>
                       </Typography>
                     </td>
                     <td className="p-4">
