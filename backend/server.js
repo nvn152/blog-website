@@ -6,11 +6,10 @@ import authRoutes from "./routes/authRoute.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import cookieParser from "cookie-parser";
 import postRoutes from "./routes/postRoute.js";
+import commentRoutes from "./routes/commentRoute.js";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
-
-console.log(process.env.MONGO_URI);
 
 connectDB();
 
@@ -24,6 +23,7 @@ app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
 
 app.use(errorHandler);
 app.listen(port, () => {

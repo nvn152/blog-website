@@ -19,10 +19,12 @@ import CreatePost from "./_root/pages/CreatePost";
 import AdminOnlyRoute from "./components/shared/AdminOnlyRoute";
 import UpdatePost from "./_root/pages/UpdatePost";
 import PostDetails from "./_root/pages/PostDetails";
+import ScrollToTop from "./components/shared/ScrollToTop";
 
 const router = createBrowserRouter([
   {
     element: <Rootlayout />,
+
     errorElement: <Error />,
     children: [
       {
