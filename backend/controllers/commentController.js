@@ -26,4 +26,26 @@ async function createComment(req, res, next) {
   }
 }
 
-export { createComment };
+async function getComments(req, res, next) {
+  try {
+    const postId = req.params.postId;
+    const comments = await Comment.find({ postId: postId }).sort({
+      createdAt: -1,
+    });
+    if (!comments) {
+      return res.status(404).json({
+        success: false,
+        message: "No comments found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Comments fetched successfully",
+      data: comments,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { createComment, getComments };

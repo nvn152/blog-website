@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteUser,
+  getUser,
   getUsers,
   signout,
   test,
@@ -14,7 +15,7 @@ router.get("/test", test);
 router.put("/update/:id", authVerification, update);
 router.delete("/delete/:id", authVerification, deleteUser);
 router.post("/signout", signout);
-router.get("/getusers", authVerification, getUsers)
-
+router.get("/getusers", authVerification, getUsers);
+router.get(`/getuser/:userId`, getUser);
 
 export default router;

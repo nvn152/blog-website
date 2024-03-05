@@ -100,12 +100,12 @@ const getUsers = async (req, res, next) => {
     const sortDirection = req.query.order === "asc" ? 1 : -1;
 
     const users = await User.find({})
-    .skip(startIndex)
-    .limit(limit)
-    .sort({ createdAt: sortDirection });
+      .skip(startIndex)
+      .limit(limit)
+      .sort({ createdAt: sortDirection });
 
     const usersWithoutPassword = users.map((user) => {
-      const { password,...userWithoutPassword } = user._doc;
+      const { password, ...userWithoutPassword } = user._doc;
       return userWithoutPassword;
     });
 
@@ -116,21 +116,33 @@ const getUsers = async (req, res, next) => {
       now.getFullYear(),
       now.getMonth() - 1,
       now.getDate()
-      );
+    );
 
-      const usersInLastMonth = await User.countDocuments({
-        createdAt: { $gte: oneMonthAge },
-      });
-      res.status(200).json({
-        success: true,
-        users: usersWithoutPassword,
-        totalUsers,
-        usersInLastMonth,
-      });
-
+    const usersInLastMonth = await User.countDocuments({
+      createdAt: { $gte: oneMonthAge },
+    });
+    res.status(200).json({
+      success: true,
+      users: usersWithoutPassword,
+      totalUsers,
+      usersInLastMonth,
+    });
   } catch (error) {
     next(error);
   }
-}
+};
 
-export { test, update, deleteUser, signout, getUsers };
+const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return next(error(404, "User not found!"));
+    }
+    const { password, ...userWithoutPassword } = user._doc;
+    res.status(200).json({ success: true, user: userWithoutPassword });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { test, update, deleteUser, signout, getUsers, getUser };

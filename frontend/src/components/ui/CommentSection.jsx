@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Comment from "./Comment";
 
 function CommentSection({ postId }) {
   const { currentUser } = useSelector((state) => state.user);
   const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,14 +24,33 @@ function CommentSection({ postId }) {
         }),
       });
       const data = await res.json();
+
       if (data.success) {
         setComment("");
+        setComments([data?.data, ...comments]);
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
   };
+
+  useEffect(() => {
+    const getComments = async () => {
+      try {
+        const res = await fetch(`/api/comments/getcomments/${postId}`);
+        const data = await res.json();
+
+        if (data.success) {
+          setComments(data.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Something went wrong");
+      }
+    };
+    getComments();
+  }, [postId]);
 
   return (
     <div className="max-w-2xl mx-auto w-full p-3">
@@ -88,6 +109,21 @@ function CommentSection({ postId }) {
           </form>
         )}
       </div>
+      {comments?.length === 0 ? (
+        <p className="text-gray-500 text-center">No comments yet</p>
+      ) : (
+        <>
+          <div className=" my-5 flex items-center gap-1 text-gray-500 text-base">
+            <p>Comments</p>
+            <div className="border border-gray-300 rounded-md p-2 ">
+              <p>{comments?.length}</p>
+            </div>
+          </div>
+          {comments.map((comment) => (
+            <Comment key={comment._id} comment={comment} />
+          ))}
+        </>
+      )}
     </div>
   );
 }

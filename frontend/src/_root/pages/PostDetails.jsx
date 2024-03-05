@@ -23,7 +23,6 @@ const PostDetails = () => {
           setPost(data?.posts[0]);
           setLoading(false);
           setError(false);
-          console.log(data?.posts[0]);
         } else {
           setError(true);
           setLoading(false);
