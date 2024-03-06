@@ -48,4 +48,39 @@ async function getComments(req, res, next) {
   }
 }
 
-export { createComment, getComments };
+async function likeComment(req, res, next) {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    const userIndex = comment.likes.findIndex(
+      (userId) => userId === req.user.id
+    );
+
+    if (userIndex !== -1) {
+      comment.likes.splice(userIndex, 1);
+      comment.numberOfLikes -= 1;
+      comment.numberOfdislikes += 1;
+    } else {
+      comment.likes.push(req.user.id);
+      comment.numberOfLikes += 1;
+      comment.numberOfdislikes -= 1;
+    }
+
+    await comment.save();
+    return res.status(200).json({
+      success: true,
+      message: "Comment liked successfully",
+      data: comment,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { createComment, getComments, likeComment };
