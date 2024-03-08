@@ -168,4 +168,50 @@ const deletecomment = async (req, res, next) => {
   }
 };
 
-export { createComment, getComments, likeComment, editcomment, deletecomment };
+const getAllComments = async (req, res, next) => {
+  if (!req.user.isAdmin) {
+    return next(error(403, "You are not allowed to perform this action"));
+  }
+  try {
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortDirection = req.query.sort === "desc" || -1;
+
+    const comments = await Comment.find().skip(startIndex).limit(limit).sort({
+      createdAt: sortDirection,
+    });
+
+    const totalComments = await Comment.countDocuments();
+    const now = new Date();
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth() - 1,
+      now.getDate()
+    );
+    const commentsInLastMonth = await Comment.countDocuments({
+      createdAt: { $gte: oneMonthAgo },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Comments fetched successfully",
+      data: {
+        comments,
+        totalComments,
+        commentsInLastMonth,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export {
+  createComment,
+  getComments,
+  likeComment,
+  editcomment,
+  deletecomment,
+  getAllComments,
+};
