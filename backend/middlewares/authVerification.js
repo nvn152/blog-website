@@ -4,8 +4,6 @@ import { error } from "../utils/error.js";
 export async function authVerification(req, res, next) {
   const token = req.cookies.token;
 
-  console.log(token);
-
   if (!token) {
     // return next(error(401, "Please login to access this route", res));
     return res.status(401).json({

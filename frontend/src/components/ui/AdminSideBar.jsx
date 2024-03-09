@@ -109,24 +109,78 @@ function AdminSideBar() {
           </ListItem>
           <AccordionBody className="py-1 dark:text-gray-300">
             <List className="p-0">
-              <ListItem>
-                <ListItemPrefix>
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Analytics
-              </ListItem>
-              <ListItem>
-                <ListItemPrefix>
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Reporting
-              </ListItem>
-              <ListItem>
-                <ListItemPrefix>
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Projects
-              </ListItem>
+              {currentUser.isAdmin && (
+                <Link to="/dashboard?tab=posts">
+                  <ListItem
+                    className={` ${
+                      isActive && tab === "posts"
+                        ? "bg-gray-100 dark:bg-black/40"
+                        : ""
+                    }`}
+                    selected={tab === "posts"}
+                    onClick={() => {
+                      setTab("posts");
+                      setIsActive(true);
+                    }}
+                  >
+                    <ListItemPrefix>
+                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                    </ListItemPrefix>
+                    <ListItemPrefix>
+                      <HiDocumentText className="h-5 w-5" />
+                    </ListItemPrefix>
+                    All Posts
+                  </ListItem>
+                </Link>
+              )}
+              {currentUser.isAdmin && (
+                <Link to="/dashboard?tab=users">
+                  <ListItem
+                    className={` ${
+                      isActive && tab === "users"
+                        ? "bg-gray-100 dark:bg-black/40"
+                        : ""
+                    }`}
+                    selected={tab === "users"}
+                    onClick={() => {
+                      setTab("users");
+                      setIsActive(true);
+                    }}
+                  >
+                    <ListItemPrefix>
+                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                    </ListItemPrefix>
+                    <ListItemPrefix>
+                      <HiOutlineUserGroup className="h-5 w-5" />
+                    </ListItemPrefix>
+                    All Users
+                  </ListItem>
+                </Link>
+              )}
+              {currentUser.isAdmin && (
+                <Link to="/dashboard?tab=comments">
+                  <ListItem
+                    className={` ${
+                      isActive && tab === "comments"
+                        ? "bg-gray-100 dark:bg-black/40"
+                        : ""
+                    }`}
+                    selected={tab === "comments"}
+                    onClick={() => {
+                      setTab("comments");
+                      setIsActive(true);
+                    }}
+                  >
+                    <ListItemPrefix>
+                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                    </ListItemPrefix>
+                    <ListItemPrefix>
+                      <HiAnnotation className="h-5 w-5" />
+                    </ListItemPrefix>
+                    All Comments
+                  </ListItem>
+                </Link>
+              )}
             </List>
           </AccordionBody>
         </Accordion>
@@ -140,37 +194,7 @@ function AdminSideBar() {
               }`}
             />
           }
-        >
-          <ListItem className="p-0" selected={open === 2}>
-            <AccordionHeader
-              onClick={() => handleOpen(2)}
-              className="border-b-0 p-3 "
-            >
-              <ListItemPrefix>
-                <ShoppingBagIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              <Typography color="blue-gray" className="mr-auto font-normal">
-                E-Commerce
-              </Typography>
-            </AccordionHeader>
-          </ListItem>
-          <AccordionBody className="py-1 dark:text-gray-300">
-            <List className="p-0">
-              <ListItem>
-                <ListItemPrefix>
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Orders
-              </ListItem>
-              <ListItem>
-                <ListItemPrefix>
-                  <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                </ListItemPrefix>
-                Products
-              </ListItem>
-            </List>
-          </AccordionBody>
-        </Accordion>
+        ></Accordion>
         <ListItem>
           <ListItemPrefix>
             <InboxIcon className="h-5 w-5" />
@@ -207,76 +231,12 @@ function AdminSideBar() {
               <Chip
                 value={currentUser.isAdmin ? "Admin" : "User"}
                 vairant="outline"
-                color="cyan"
+                color="blue"
               />
             </ListItemSuffix>
           </ListItem>
         </Link>
-        {currentUser.isAdmin && (
-          <Link to="/dashboard?tab=posts">
-            <ListItem
-              className={` ${
-                isActive && tab === "posts"
-                  ? "bg-gray-100 dark:bg-black/40"
-                  : ""
-              }`}
-              selected={tab === "posts"}
-              onClick={() => {
-                setTab("posts");
-                setIsActive(true);
-              }}
-            >
-              <ListItemPrefix>
-                <HiDocumentText className="h-5 w-5" />
-              </ListItemPrefix>
-              All Posts
-            </ListItem>
-          </Link>
-        )}
 
-        {currentUser.isAdmin && (
-          <Link to="/dashboard?tab=users">
-            <ListItem
-              className={` ${
-                isActive && tab === "users"
-                  ? "bg-gray-100 dark:bg-black/40"
-                  : ""
-              }`}
-              selected={tab === "users"}
-              onClick={() => {
-                setTab("users");
-                setIsActive(true);
-              }}
-            >
-              <ListItemPrefix>
-                <HiOutlineUserGroup className="h-5 w-5" />
-              </ListItemPrefix>
-              All Users
-            </ListItem>
-          </Link>
-        )}
-
-        {currentUser.isAdmin && (
-          <Link to="/dashboard?tab=comments">
-            <ListItem
-              className={` ${
-                isActive && tab === "comments"
-                  ? "bg-gray-100 dark:bg-black/40"
-                  : ""
-              }`}
-              selected={tab === "comments"}
-              onClick={() => {
-                setTab("comments");
-                setIsActive(true);
-              }}
-            >
-              <ListItemPrefix>
-                <HiAnnotation className="h-5 w-5" />
-              </ListItemPrefix>
-              All Comments
-            </ListItem>
-          </Link>
-        )}
         <ListItem onClick={handleSignOut}>
           <ListItemPrefix>
             <PowerIcon className="h-5 w-5" />

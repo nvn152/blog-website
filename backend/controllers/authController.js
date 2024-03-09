@@ -20,7 +20,6 @@ const signup = asyncHandler(async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
 
   const hashedPassword = await bcrypt.hash(password, salt);
-  console.log(hashedPassword);
 
   const user = new User({
     username,
@@ -70,8 +69,6 @@ const signin = asyncHandler(async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: "300m" }
     );
-
-    console.log(`Access token = ${accessToken}`);
 
     const { password: password, ...userWithoutPassword } = user._doc;
 

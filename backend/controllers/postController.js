@@ -31,34 +31,28 @@ const createPost = expressAsyncHandler(async (req, res, next) => {
       newPost: savedPost,
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 });
 
 const getPosts = expressAsyncHandler(async (req, res, next) => {
-  
   try {
     const startIndex = parseInt(req.query.startIndex) || 0;
     const limit = parseInt(req.query.limit) || 10;
     const sortDirection = req.query.order === "asc" ? 1 : -1;
-
-    
 
     // Building the query conditions dynamically
     const queryConditions = {};
     if (req.query.userId) queryConditions.userId = req.query.userId;
     if (req.query.category) queryConditions.category = req.query.category;
     if (req.query.slug) queryConditions.slug = req.query.slug;
-    if (req.query.postId) queryConditions._id = req.query.postId; 
+    if (req.query.postId) queryConditions._id = req.query.postId;
     if (req.query.searchTerm) {
       queryConditions.$or = [
         { title: { $regex: req.query.searchTerm, $options: "i" } },
         { content: { $regex: req.query.searchTerm, $options: "i" } },
       ];
     }
-
-    console.log(queryConditions);
 
     const posts = await Post.find(queryConditions)
       .sort({ updatedAt: sortDirection })
@@ -86,7 +80,6 @@ const getPosts = expressAsyncHandler(async (req, res, next) => {
       postsInLastMonth,
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 });
@@ -131,9 +124,8 @@ const updatePost = expressAsyncHandler(async (req, res, next) => {
       updatedPost,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
-  
-})
+});
 
 export { getPosts, createPost, deletePost, updatePost };

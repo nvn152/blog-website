@@ -5,6 +5,7 @@ import AdminProfile from "../../components/ui/AdminProfile";
 import AllPosts from "../../components/AllPosts";
 import AllUsers from "../../components/AllUsers";
 import AllComments from "../../components/AllComments";
+import DashboardStats from "../../components/DashboardStats";
 
 function Dashboard() {
   const location = useLocation();
@@ -30,6 +31,7 @@ function Dashboard() {
         {tab === "posts" && <AllPosts />}
         {tab === "users" && <AllUsers />}
         {tab === "comments" && <AllComments />}
+        {tab === "stats" && <DashboardStats />}
       </div>
     </div>
   );
