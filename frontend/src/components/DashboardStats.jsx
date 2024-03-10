@@ -69,7 +69,7 @@ function DashboardStats() {
   console.log(comments);
 
   return (
-    <div className="p-3 md:mx-auto">
+    <div className="p-3 md:mx-auto mt-5">
       <div className="flex flex-wrap gap-4 justify-center">
         <div className="flex flex-col p-3 dark:bg-[#1E1E1E] gap-4 md:w-[450px] w-full rounded-md shadow-md">
           <div className="flex justify-between">
